@@ -10,24 +10,32 @@ const PORT = 4040;
 
 
 
+
+/** DATABASE */
+const urlDatabase = {
+  "b2xVn2": {
+      longURL: "http://www.lighthouselabs.ca",
+      userID: 'user1'
+  },
+
+  "9sm5xK": {
+      longURL: "http://www.google.com",
+      userID: "user2"
+  }
+};
+
 const users = { 
-    "userRandomID": {
+    "user1RandomID": {
       id: "userRandomID", 
       email: "user@example.com", 
-      password: "purple-monkey-dinosaur"
+      password: "010101"
     },
    "user2RandomID": {
       id: "user2RandomID", 
       email: "user2@example.com", 
-      password: "dishwasher-funk"
+      password: "password"
     }
   }
-
-/** DATABASE */
-const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
 
 /** MIDDLEWARE */
 //use bodyParser to handle post request
@@ -56,7 +64,8 @@ app.get("/hello", (req, res) => {
 /** main page */
 app.get("/urls", (req, res) => {
   const templateVars = {
-    username: req.cookies['username'],
+    users,
+    userID: req.cookies['user_id'],
     urls: urlDatabase
   };
   res.render("urls_index", templateVars);
@@ -79,7 +88,7 @@ app.post("/logout", (req, res) => {
 /** add a new URL */
 app.get("/urls/new", (req, res) => {
   const templateVars = {
-    username: req.cookies["username"],
+    username: req.cookies["user_id"],
   };
   res.render("urls_new", templateVars);
 });
@@ -90,6 +99,26 @@ app.get("/register", (req, res) => {
     res.render("register", templateVars);
   });
 
+  app.post("/register/", (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
+  
+    if(!email || !password) 
+    return res.status(400).send("Error code 400, email or password has been left blank/or incorrect");
+  
+    const user = findUserByEmail(email);
+    if(user) return res.status(400).send("Error, email already exists. Please log into your account!")
+  
+    const userID = generateRandomString();
+    users[userID] = {
+      id: userID,
+      email,
+      password
+    }
+    res.cookie('user_id', userID);
+    res.redirect("/urls");
+  })
+
 app.post("/urls", (req, res) => {
   //console.log(req.body);
   //add new key-value into urlDatabase
@@ -99,7 +128,7 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
-
+e
 
 app.post("/urls/:shortURL/delete", (req, res) => { /** delete URL */
   const shortURL = req.params.shortURL;
