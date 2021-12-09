@@ -21,12 +21,12 @@ const users = {
   user1: {
     id: "user1",
     email: "user@example.com",
-    password: "",
+    password: "123",
   },
   user2: {
     id: "user2",
     email: "user2@example.com",
-    password: "",
+    password: "321",
   },
 };
 
@@ -56,12 +56,16 @@ app.get("/urls", (req, res) => {
 
 /*****login*****/
 app.get("/login", (req, res) => {
-  if (req.cookies["user_id"]) {
-    res.redirect("/urls");
-  }
+//   if (req.cookies["user_id"]) {
+//    return res.redirect("/urls");
+//   }
   res.render("login");
 });
 
+//refactor this
+// when a user makes a login only the user should be able to view 
+//write a function called urlsFolder(id)
+//reutrns filtered urlDatabase == only containers urls for that id
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -160,7 +164,7 @@ app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   if (!findDataByShortURL(shortURL)) return res.status(400).send("Invalid URL");
 
-  const longURL = urlDatabase[req.params.shortURL].longURL; /////////
+  const longURL = urlDatabase[req.params.shortURL].longURL; 
   res.redirect(`${longURL}`);
 });
 
