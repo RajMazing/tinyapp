@@ -1,3 +1,5 @@
+
+
 <header>
   <nav class="navbar navbar-expand-md navbar-dark bg-success">
     <a class="navbar-brand" href="/urls">TinyApp</a>
@@ -12,10 +14,8 @@
         <a class="nav-item nav-link" style="margin: 4px 4px; text-align: right;"  href="/login">Login</a>
       </div>
     </div>
-
-  
     <% if (user ) { %>
-      <p style=" border: 0px; margin: 4px; padding: 4px 5px 7px; border-radius: 3px; text-align: left;">Logged In As: <%= user.email %>!</p>
+      <p style=" border: 0px; margin: 4px; padding: 4px 5px 7px; border-radius: 3px; text-align: left;">Logged in as: <%= user.email %>!</p>
       <form method="POST" action="/logout">
         <button type="submit" class="btn btn-outline-dark" style="margin: 4px 4px; text-align: center;">Logout</button>
       </form>
@@ -24,7 +24,8 @@
         <!-- <input name="userID" style="width: 150px; border: 0px; margin: 4px; padding: 4px 5px 7px; border-radius: 3px; text-align: left;">
         <button type="submit" class="btn btn-outline-dark" style="margin: 4px 4px; text-align: center;">Login</button> -->
       </form>
-  <% } %>
+    <% } %>
+  
+    
   </nav>
 </header>
-
