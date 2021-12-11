@@ -4,6 +4,9 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const app = express();
 const PORT = 4040;
+const bcrypt = require('bcryptjs');
+const password = ""; // found in the req.params object
+const hashedPassword = bcrypt.hashSync(password, 10);
 
 /** DATABASE */
 const urlDatabase = {
@@ -21,12 +24,12 @@ const users = {
   user1: {
     id: "user1",
     email: "user@example.com",
-    password: "123",
+    password: bcrypt.hashSync("123")
   },
   user2: {
     id: "user2",
     email: "user2@example.com",
-    password: "321",
+    password: bcrypt.hashSync("321")
   },
 
 };
@@ -118,8 +121,15 @@ app.post("/login", (req, res) => {
   const user = findUserByEmail(email);
 
   if (!user) return res.status(403).send("Error, user not found!");
-  if (user.password !== password) {
+
+  
+  if (!bcrypt.compareSync(password, user.password)) {
     return res.status(403).send("Error, password doesn't match our records");
+  }
+
+  const matchMe = bcrypt.compareSync(password, user.password);
+  if(!matchMe) {
+    return res.status(403).send("Incorrect Password")
   }
   res.cookie("user_id", user.id);
   res.redirect("/urls");
@@ -147,6 +157,7 @@ app.post("/register/", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const userID = generateRandomString();
+  const hashedPassword = bcrypt.hashSync(password, 10);
 
   if (!email || !password)
     return res.status(400).send("email and password should not be blank!");
@@ -159,7 +170,7 @@ app.post("/register/", (req, res) => {
   users[userID] = {
     id: userID,
     email: email,
-    password: password,
+    password: hashedPassword,
   };
   res.cookie("user_id", userID);
   
@@ -316,5 +327,3 @@ function findDataByShortURL(shortURL) {
   }
   return null;
 }
-
-
