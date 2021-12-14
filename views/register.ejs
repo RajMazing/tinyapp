@@ -18,10 +18,10 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-          <a class="nav-item nav-link" style="margin: 4px" href="/urls">My URLs</a>
-          <a class="nav-item nav-link" style="margin: 4px" href="/urls/new">Create New URL</a>
-          <a class="nav-item nav-link" style="margin: 4px 4px; text-align: right;"  href="/register">Register</a>
-          <a class="nav-item nav-link" style="margin: 4px 4px; text-align: right;"  href="/login">Login</a>
+          <a class="nav-item nav-link"  href="/urls">My URLs</a>
+          <a class="nav-item nav-link"  href="/urls/new">Create New URL</a>
+          <a class="nav-item nav-link" >Register</a>
+          <a class="nav-item nav-link"  href="/login">Login</a>
         </div>
       </div>
   
@@ -34,12 +34,14 @@
     <form action="/register" method= "POST" style="margin: 0.5em">
     <fieldset>
       <label for="Email">Email</label>
-      <input type ="text" name="email" class="form-control" style="width: 300px; margin: 1em"  placeholder="Enter Email" required/> <br/>
+      <input type ="text" name="email" class="form-control" style="width: 300px"  placeholder="Enter Email" required/> <br/>
       <label for="password"> Password </label>
-      <input type ="password" name="password" class="form-control" style="width: 300px; margin: 1em" placeholder="Password" required/>  <br/>
-      <input type="submit" value="Register" class="btn btn-primary" />
+      <input type ="password" name="password" class="form-control" style="width: 300px" placeholder="Password" required/>  <br/>
+      <input type="submit" value="Create Account Now" class="btn btn-primary" />
     </fieldset>
     </form>
+    <br>
+    <a style="margin: 1em" href="/login">Already have a TinyApp account? Sign in!</a>
   </div>
 </body>
 </html>
