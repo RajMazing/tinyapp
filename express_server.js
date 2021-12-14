@@ -3,10 +3,12 @@ const cookieSession = require("cookie-session");
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
-const PORT = 4040;
+const PORT = 7070;
 const bcrypt = require("bcryptjs");
-const password = ""; // found in the req.params object
-const hashedPassword = bcrypt.hashSync(password, 10);
+
+
+
+
 
 // functions in my helpers.js
 const { generateRandomString } = require("./helpers");
@@ -21,9 +23,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   cookieSession({
     name: "session",
-    keys: ["major key", "key2"],
+    keys: ["major key"]
   })
 );
+
 app.set("view engine", "ejs");
 
 /******index ******/
@@ -32,18 +35,24 @@ app.get("/", (req, res) => {
   return user ? res.redirect("/urls") : res.redirect("/login");
 });
 
+
+
 /*****login*****/
 app.get("/login", (req, res) => {
   const user = users[req.session.user_id];
+ if (!user) {
   const templateVars = {
-    user,
+    users
   };
   res.render("login", templateVars);
+} else {
+  res.redirect('/urls')
+}
 });
-//refactor this
-// when a user makes a login only the user should be able to view
-//write a function called urlsFolder(id)
-//reutrns filtered urlDatabase == only containers urls for that id
+
+
+
+// login issue fixed, doesn't show when logged in
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -51,7 +60,7 @@ app.post("/login", (req, res) => {
   if (!email || !password)
     return res.status(400).send("Error, email/or password is blank!");
 
-  const user = getUserByEmail(email);
+  const user = getUserByEmail(email, users);
 
   if (!user) return res.status(403).send("Error, user not found!");
 
@@ -67,33 +76,73 @@ app.post("/login", (req, res) => {
   res.redirect("/urls");
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /****logout****/
 app.post("/logout", (req, res) => {
-  req.session.user_id = null;
+  req.session = null;
   res.redirect("/urls");
 });
+
+
 
 /****register - access****/
 app.get("/register", (req, res) => {
   const user = users[req.session.user_id];
-  const templateVars = {
-    user,
+
+    const templateVars = {
+    user
   };
+
   res.render("register", templateVars);
 });
+
 
 /*** Register POST ****/
 app.post("/register/", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const userID = generateRandomString();
+  const verifiedUser = getUserByEmail(email, users);
   const hashedPassword = bcrypt.hashSync(password, 10);
 
   if (!email || !password)
     return res.status(400).send("email and password should not be blank!");
 
-  const user = getUserByEmail(email);
-  if (user)
+  
+  if (verifiedUser)
     return res.status(400).send("You've already registered. Please log in.");
 
   users[userID] = {
@@ -101,9 +150,9 @@ app.post("/register/", (req, res) => {
     email: email,
     password: hashedPassword,
   };
-  req.session.user_id = userID;
-
+  req.session['user_id'] = userID;
   res.redirect("/urls");
+  
 });
 
 /*****urls*****/
@@ -121,6 +170,16 @@ app.get("/urls", (req, res) => {
     urls: userIdUrls(user.id, urlDatabase),
   };
   res.render("urls_index", templateVars);
+});
+
+app.post("/urls", (req, res) => {
+  const user = users[req.session.user_id];
+  if (!user) return res.status(403).send("Blocked: not authorized.");
+
+  const shortURL = generateRandomString();
+  urlDatabase[shortURL] = { longURL: req.body.longURL, userID: user.id };
+
+  res.redirect(`/urls/${shortURL}`);
 });
 
 /*****ADD new URL****/
@@ -161,15 +220,7 @@ app.post("/urls/:id", (req, res) => {
   res.redirect("/urls");
 });
 
-app.post("/urls", (req, res) => {
-  const user = users[req.session.user_id];
-  if (!user) return res.status(403).send("Blocked: not authorized.");
 
-  const shortURL = generateRandomString();
-  urlDatabase[shortURL] = { longURL: req.body.longURL, userID: user.id };
-
-  res.redirect(`/urls/${shortURL}`);
-});
 
 /*****delete URL POST*****/
 app.post("/urls/:shortURL/delete", (req, res) => {
@@ -199,9 +250,4 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
 });
 
-function findDataByShortURL(shortURL) {
-  for (const key in urlDatabase) {
-    if (key === shortURL) return shortURL;
-  }
-  return null;
-}
+
