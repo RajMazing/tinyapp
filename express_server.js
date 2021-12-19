@@ -14,8 +14,8 @@ const bcrypt = require("bcryptjs");
 const { generateRandomString } = require("./helpers");
 const { userIdUrls } = require("./helpers");
 const { getUserByEmail } = require("./helpers");
-const { urlDatabase } = require("./helpers");
-const { users } = require("./helpers");
+const { urlDatabase } = require("./database");
+const { users } = require("./database");
 
 /**** MIDDLEWARE ****/
 //use bodyParser to handle post request
@@ -40,14 +40,13 @@ app.get("/", (req, res) => {
 /*****login*****/
 app.get("/login", (req, res) => {
   const user = users[req.session.user_id];
- if (!user) {
+ 
   const templateVars = {
     users
   };
   res.render("login", templateVars);
-} else {
-  res.redirect('/urls')
-}
+
+
 });
 
 
@@ -75,39 +74,6 @@ app.post("/login", (req, res) => {
   req.session.user_id = user.id;
   res.redirect("/urls");
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /****logout****/
@@ -158,12 +124,8 @@ app.post("/register/", (req, res) => {
 /*****urls*****/
 app.get("/urls", (req, res) => {
   const user = users[req.session.user_id];
-  console.log(urlDatabase);
-  console.log(userIdUrls(user, urlDatabase));
-  console.log(users);
-  console.log(user);
   if (!user) {
-    res.send("<h2><a href='/login'>Please login</a></h2>");
+   return res.send("<h2><a href='/login'>Please login</a></h2>");
   }
   const templateVars = {
     user,
@@ -236,11 +198,9 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 /****redirecting the server to longURL****/
 app.get("/u/:shortURL", (req, res) => {
-  const shortURL = req.params.shortURL;
-  if (!findDataByShortURL(shortURL)) {
-    return res.status(400).send("Invalid URL");
+  if (!urlDatabase[req.params.shortURL]) {
+    return res.status(403).send("ShortUrl doesn't exist")
   }
-
   const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(`${longURL}`);
 });
@@ -249,5 +209,3 @@ app.get("/u/:shortURL", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
 });
-
-

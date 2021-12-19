@@ -1,9 +1,9 @@
 const bcrypt = require('bcryptjs');
 
-const getUserByEmail = function(email, database) {
+const getUserByEmail = function(email, users) {
   // lookup magic...
-  for (const userID in database) {
-    const user = database[userID];
+  for (const userID in users) {
+    const user = users[userID];
     if(user.email === email) {
       return user;
     }
@@ -28,30 +28,30 @@ const userIdUrls = (id, urlDatabase) => {
 };
 
 /** DATABASE */
-const urlDatabase = {
-  b6UTxQ: {
-      longURL: "https://www.tsn.ca",
-      userID: "aJ48lW"
-  },
-  i3BoGr: {
-      longURL: "https://www.google.ca",
-      userID: "aJ48lW"
-  }
-};
+// const urlDatabase = {
+//   b6UTxQ: {
+//       longURL: "https://www.tsn.ca",
+//       userID: "aJ48lW"
+//   },
+//   i3BoGr: {
+//       longURL: "https://www.google.ca",
+//       userID: "aJ48lW"
+//   }
+// };
 
-const users = {
-  user1: {
-    id: "user1",
-    email: "user@example.com",
-    password: bcrypt.hashSync("123")
-  },
-  user2: {
-    id: "user2",
-    email: "user2@example.com",
-    password: bcrypt.hashSync("321")
-  },
+// const users = {
+//   user1: {
+//     id: "user1",
+//     email: "user@example.com",
+//     password: bcrypt.hashSync("123")
+//   },
+//   user2: {
+//     id: "user2",
+//     email: "user2@example.com",
+//     password: bcrypt.hashSync("321")
+//   },
 
-};
+// };
 
 /****Function generateRandomString****/
 function generateRandomString() {
@@ -68,21 +68,4 @@ function generateRandomString() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-module.exports = {urlDatabase, users, generateRandomString, userIdUrls, getUserByEmail};
+module.exports = { generateRandomString, userIdUrls, getUserByEmail};
