@@ -3,7 +3,7 @@ const cookieSession = require("cookie-session");
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
-const PORT = 7070;
+const PORT = 8080;
 const bcrypt = require("bcryptjs");
 
 
@@ -162,7 +162,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const userUrls = userIdUrls(req.session.user_id, urlDatabase);
 
   if (!userUrls[shortURL]) {
-    return res.status(403).send("link doesn't exist");
+    return res.status(403).send("Access denied!");
   }
 
   const templateVars = {
@@ -189,7 +189,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
   const userUrls = userIdUrls(req.session.user_id, urlDatabase);
   if (!userUrls[shortURL]) {
-    return res.status(403).send("Failed to delete");
+    return res.status(403).send("Failed to delete link");
   }
 
   delete urlDatabase[shortURL];
@@ -198,9 +198,9 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 /****redirecting the server to longURL****/
 app.get("/u/:shortURL", (req, res) => {
-  if (!urlDatabase[req.params.shortURL]) {
-    return res.status(403).send("ShortUrl doesn't exist")
-  }
+  // if (!urlDatabase[req.params.shortURL]) {
+  //   return res.status(403).send("ShortUrl doesn't exist")
+  // }
   const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(`${longURL}`);
 });
