@@ -178,6 +178,10 @@ app.post("/urls/:id", (req, res) => {
   const newLongURL = req.body.longURL;
   const shortURL = req.params.id;
 
+  if(!req.session.user_id) {
+    return res.status(401).send("Unauthorized access");
+  }
+
   urlDatabase[shortURL].longURL = newLongURL;
   res.redirect("/urls");
 });
@@ -191,7 +195,6 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   if (!userUrls[shortURL]) {
     return res.status(403).send("Failed to delete link");
   }
-
   delete urlDatabase[shortURL];
   res.redirect("/urls");
 });
