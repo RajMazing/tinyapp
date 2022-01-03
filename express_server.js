@@ -178,9 +178,9 @@ app.post("/urls/:id", (req, res) => {
   const newLongURL = req.body.longURL;
   const shortURL = req.params.id;
 
-  if(!req.session.user_id) {
-    return res.status(401).send("Unauthorized access");
-  }
+  if (!userUrls[shortURL]) {
+    return res.status(403).send("Cannot edit");
+   }
 
   urlDatabase[shortURL].longURL = newLongURL;
   res.redirect("/urls");
