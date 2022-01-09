@@ -177,6 +177,7 @@ app.get("/urls/:shortURL", (req, res) => {
 app.post("/urls/:id", (req, res) => {
   const newLongURL = req.body.longURL;
   const shortURL = req.params.id;
+  const userUrls = userIdUrls(req.session.user_id, urlDatabase);
 
   if (!userUrls[shortURL]) {
     return res.status(403).send("Cannot edit");
@@ -201,11 +202,21 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 /****redirecting the server to longURL****/
 app.get("/u/:shortURL", (req, res) => {
-  // if (!urlDatabase[req.params.shortURL]) {
-  //   return res.status(403).send("ShortUrl doesn't exist")
-  // }
+  console.log(urlDatabase)
+  console.log(req.params.shortURL)
   const longURL = urlDatabase[req.params.shortURL].longURL;
-  res.redirect(`${longURL}`);
+
+  if (!urlDatabase[req.params.shortURL]) {
+    return res.status(403).send("ShortUrl doesn't exist")
+  }
+
+  if (!longURL.includes('http')) {
+    res.redirect(`http://${longURL}`)
+  } else {
+
+     res.redirect(longURL);
+  } 
+ 
 });
 
 /****** Port server*****/
